@@ -83,8 +83,8 @@ body{font-family:'Montserrat',sans-serif;background:#c8d2e2;min-height:100vh;pad
   resize:none;min-height:44px;border:1px solid var(--line);
   border-radius:4px;padding:6px;background:var(--light);
   font-family:'Montserrat',sans-serif;font-size:11px;
-  word-wrap:break-word;overflow-wrap:break-word;white-space:pre-wrap;
-  overflow:hidden;width:100%;outline:none;line-height:1.5}
+  word-wrap:break-word;overflow-wrap:anywhere;white-space:pre-wrap;
+  overflow:hidden;width:100%;outline:none;line-height:1.5;field-sizing:content}
 .field textarea:focus{border-color:var(--sky2);background:#fff}
 .field select{background:transparent;cursor:pointer}
 
@@ -92,6 +92,8 @@ body{font-family:'Montserrat',sans-serif;background:#c8d2e2;min-height:100vh;pad
 .check-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 10px}
 .check-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink);cursor:pointer}
 .check-item input[type=checkbox]{width:13px;height:13px;accent-color:var(--navy);flex-shrink:0}
+.dasi-q{align-items:flex-start;line-height:1.35;margin-bottom:4px}
+.dasi-q input{margin-top:2px}
 
 /* ── ESCALAS FUNCIONALES ── */
 .escala-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
@@ -149,12 +151,14 @@ body{font-family:'Montserrat',sans-serif;background:#c8d2e2;min-height:100vh;pad
   padding:6px 0;border-bottom:1px solid var(--line);align-items:start}
 .med-num{font-size:11px;font-weight:800;color:var(--gold2);text-align:center;padding-top:2px}
 .med-fields{display:flex;flex-direction:column;gap:3px}
-.med-fields input{border:none;border-bottom:1px solid var(--line);width:100%;
+.med-fields input,.med-fields textarea{border:none;border-bottom:1px solid var(--line);width:100%;
   font-family:'Montserrat',sans-serif;font-size:11.5px;font-weight:600;
   color:var(--ink);background:transparent;outline:none;padding:1px 2px;
-  word-wrap:break-word;overflow-wrap:break-word}
-.med-fields input.sub{font-size:10px;font-weight:400;color:var(--gray)}
-.med-fields input:focus{border-bottom-color:var(--sky)}
+  word-wrap:break-word;overflow-wrap:anywhere}
+.med-fields textarea{display:block;resize:none;overflow:hidden;white-space:pre-wrap;
+  line-height:1.35;min-height:18px;field-sizing:content}
+.med-fields input.sub,.med-fields textarea.sub{font-size:10px;font-weight:400;color:var(--gray)}
+.med-fields input:focus,.med-fields textarea:focus{border-bottom-color:var(--sky)}
 .med-plan select{border:none;border-bottom:1px solid var(--line);font-size:10px;
   font-family:'Montserrat',sans-serif;color:var(--ink);background:transparent;
   outline:none;width:100%;cursor:pointer}
@@ -209,39 +213,31 @@ body{font-family:'Montserrat',sans-serif;background:#c8d2e2;min-height:100vh;pad
   body{background:#fff;padding:0;margin:0}
   .controls{display:none !important}
   .add-btn{display:none !important}
-  .sheet{box-shadow:none;max-width:100%;width:100%}
+  .sheet{box-shadow:none;max-width:100%;width:100%;overflow:visible;height:auto}
+  .footer,.bottom-bar{position:static}
 
-  /* Campos — mostrar contenido completo sin recortar */
-  input,select{
-    overflow:visible !important;
-    white-space:normal !important;
-    word-wrap:break-word !important;
-    overflow-wrap:break-word !important;
-    height:auto !important;
-    max-height:none !important;
-  }
+  /* La altura la fija el texto (field-sizing y el ajuste al escribir).
+     height:auto sin eso encoge el cuadro a un renglón y el resto no empuja hacia abajo. */
   textarea{
-    overflow:visible !important;
+    overflow:hidden !important;
     white-space:pre-wrap !important;
-    word-wrap:break-word !important;
-    overflow-wrap:break-word !important;
-    height:auto !important;
+    overflow-wrap:anywhere !important;
     max-height:none !important;
-    min-height:0 !important;
     resize:none !important;
-    display:block !important;
-    border-radius:0 !important;
+    field-sizing:content !important;
   }
 
-  /* Evitar corte entre páginas */
-  .section{page-break-inside:avoid}
-  .score-card{page-break-inside:avoid}
-  .med-row{page-break-inside:avoid}
-  .lab-table tr{page-break-inside:avoid}
-  .concl-item{page-break-inside:avoid}
-  .check-grid{page-break-inside:avoid}
-  .escala-row{page-break-inside:avoid}
-  .sap-item{page-break-inside:avoid}
+  /* Las secciones largas siguen en la página siguiente, sin encoger la letra */
+  .section{break-inside:auto;page-break-inside:auto}
+  .score-card{break-inside:avoid;page-break-inside:avoid}
+  .med-row{break-inside:avoid;page-break-inside:avoid}
+  .lab-table tr{break-inside:avoid;page-break-inside:avoid}
+  .concl-item{break-inside:avoid;page-break-inside:avoid}
+  .check-grid{break-inside:avoid;page-break-inside:avoid}
+  .escala-row{break-inside:avoid;page-break-inside:avoid}
+  .sap-item{break-inside:avoid;page-break-inside:avoid}
+  .footer,.firma-row,.membrete{break-inside:avoid;page-break-inside:avoid}
+  .nsqip-link{display:none !important}
 
   /* Colores exactos */
   .top-bar,.footer,.bottom-bar,.sec-header,.sub-header,
@@ -474,6 +470,36 @@ body{font-family:'Montserrat',sans-serif;background:#c8d2e2;min-height:100vh;pad
   <div class="field-grid fg-1" style="grid-template-columns:1fr">
     <div class="field"><label>Observaciones funcionales</label><textarea id="obs-func" oninput="autoResize(this)" placeholder="Fuerza de prensión, equilibrio, observaciones del examen funcional..."></textarea></div>
   </div>
+
+  <div class="sub-header">Capacidad funcional (METs y DASI)</div>
+  <div class="field" style="margin-bottom:8px">
+    <label>Estimación clínica — ¿sube 2 pisos de escaleras?</label>
+    <select id="mets-escaleras" onchange="calcular()">
+      <option value="">Sin registrar</option>
+      <option value="1">Sí — sube 2 pisos o un esfuerzo igual (≥4 METs)</option>
+      <option value="0">No — no alcanza ese esfuerzo (&lt;4 METs)</option>
+    </select>
+  </div>
+  <div class="score-detail" style="margin-bottom:6px">Cuestionario DASI completo. Marque solo lo que sí puede hacer. Cada actividad trae su peso estándar.</div>
+  <div id="dasi-list">
+    <label class="check-item dasi-q"><input type="checkbox" class="dasi-item" id="dasi-1" data-w="2.75" onchange="calcular()"> Cuidarse solo: comer, vestirse, bañarse o usar el sanitario (2.75)</label>
+    <label class="check-item dasi-q"><input type="checkbox" class="dasi-item" id="dasi-2" data-w="1.75" onchange="calcular()"> Caminar dentro de la casa (1.75)</label>
+    <label class="check-item dasi-q"><input type="checkbox" class="dasi-item" id="dasi-3" data-w="2.75" onchange="calcular()"> Caminar una o dos cuadras en terreno plano (2.75)</label>
+    <label class="check-item dasi-q"><input type="checkbox" class="dasi-item" id="dasi-4" data-w="5.50" onchange="calcular()"> Subir un piso de escaleras o una cuesta (5.50)</label>
+    <label class="check-item dasi-q"><input type="checkbox" class="dasi-item" id="dasi-5" data-w="8.00" onchange="calcular()"> Correr una distancia corta (8.00)</label>
+    <label class="check-item dasi-q"><input type="checkbox" class="dasi-item" id="dasi-6" data-w="2.70" onchange="calcular()"> Trabajo ligero en casa: quitar el polvo o lavar los platos (2.70)</label>
+    <label class="check-item dasi-q"><input type="checkbox" class="dasi-item" id="dasi-7" data-w="3.50" onchange="calcular()"> Trabajo moderado en casa: aspirar, barrer o cargar el mandado (3.50)</label>
+    <label class="check-item dasi-q"><input type="checkbox" class="dasi-item" id="dasi-8" data-w="8.00" onchange="calcular()"> Trabajo pesado en casa: tallar pisos o mover muebles pesados (8.00)</label>
+    <label class="check-item dasi-q"><input type="checkbox" class="dasi-item" id="dasi-9" data-w="4.50" onchange="calcular()"> Jardín: rastrillar, deshierbar o empujar un cortacésped (4.50)</label>
+    <label class="check-item dasi-q"><input type="checkbox" class="dasi-item" id="dasi-10" data-w="5.25" onchange="calcular()"> Tener relaciones sexuales (5.25)</label>
+    <label class="check-item dasi-q"><input type="checkbox" class="dasi-item" id="dasi-11" data-w="6.00" onchange="calcular()"> Actividad moderada: golf, boliche, baile, tenis en dobles o lanzar una pelota (6.00)</label>
+    <label class="check-item dasi-q"><input type="checkbox" class="dasi-item" id="dasi-12" data-w="7.50" onchange="calcular()"> Deporte intenso: nadar, tenis individual, fútbol, basquetbol o esquiar (7.50)</label>
+  </div>
+  <div class="score-card" id="sec-dasi" style="margin-top:8px">
+    <div class="score-card-title">Resultado DASI — capacidad funcional</div>
+    <div class="score-result"><span class="score-num" id="sc-dasi">—</span><div><span class="score-label">de 58.2 puntos</span><br><span class="badge badge-gray" id="b-dasi">Pendiente</span></div></div>
+    <div class="score-detail" id="d-dasi">VO₂ pico = (0.43 × DASI) + 9.6. METs = VO₂ pico / 3.5. Según ACC/AHA 2024, un DASI mayor de 34 equivale a unos 4 METs o más.</div>
+  </div>
 </div>
 
 <!-- V. DIAGNÓSTICOS -->
@@ -499,6 +525,10 @@ body{font-family:'Montserrat',sans-serif;background:#c8d2e2;min-height:100vh;pad
     <div class="field"><label>Procedimiento quirúrgico programado</label><textarea id="dx-cx" placeholder="Ej. Colecistectomía laparoscópica" rows="1" oninput="autoResize(this)" style="min-height:28px;height:28px;resize:none;overflow:hidden;border:none;border-bottom:1.5px solid var(--navy);padding:3px 4px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--ink);background:transparent;outline:none;width:100%;word-wrap:break-word;overflow-wrap:break-word;line-height:1.4"></textarea></div>
     <div class="field"><label>Servicio solicitante / Cirujano</label><textarea id="dx-cirujano" placeholder="Ej. Dr. Juan Pérez — Cirugía General" rows="1" oninput="autoResize(this)" style="min-height:28px;height:28px;resize:none;overflow:hidden;border:none;border-bottom:1.5px solid var(--navy);padding:3px 4px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--ink);background:transparent;outline:none;width:100%;word-wrap:break-word;overflow-wrap:break-word;line-height:1.4"></textarea></div>
   </div>
+  <label class="check-item dasi-q" style="margin-top:8px">
+    <input type="checkbox" id="cx-altoriesgo" onchange="calcular()">
+    <span>Cirugía de alto riesgo para el RCRI: intraperitoneal, intratorácica o vascular suprainguinal. Solo esta casilla suma el punto de cirugía. Escribir el nombre del procedimiento no lo suma.</span>
+  </label>
 </div>
 
 <!-- VI. MEDICAMENTOS -->
@@ -556,6 +586,7 @@ body{font-family:'Montserrat',sans-serif;background:#c8d2e2;min-height:100vh;pad
     <div class="score-card">
       <div class="score-card-title">RCRI — Riesgo Cardíaco</div>
       <div class="score-result"><span class="score-num" id="sc-rcri">—</span><div><span class="score-label">/ 6 puntos</span><br><span class="badge badge-gray" id="b-rcri">Pendiente</span></div></div>
+      <div class="score-detail">El punto de cirugía solo cuenta la operación intraperitoneal, intratorácica o vascular suprainguinal.</div>
       <div class="score-detail" id="d-rcri"></div>
     </div>
     <div class="score-card">
@@ -697,9 +728,28 @@ body{font-family:'Montserrat',sans-serif;background:#c8d2e2;min-height:100vh;pad
   <div class="field" style="margin-top:8px"><label>Estudios pendientes</label><textarea id="estudios-pend" oninput="autoResize(this)" style="min-height:44px" placeholder="HbA1c, tipo de sangre, espirometría, ecocardiograma..."></textarea></div>
 </div>
 
-<!-- XI. CONCLUSIÓN -->
+<!-- XI. NSQIP -->
+<div class="section" id="sec-nsqip">
+  <div class="sec-header">XI. &nbsp; RIESGO ACS NSQIP — CALCULADORA OFICIAL</div>
+  <div class="alert-box alert-amber">Estos datos no se calculan aquí. Se copian de la calculadora oficial del American College of Surgeons.</div>
+  <div class="score-detail" style="margin:6px 0 8px">Calculadora oficial: https://riskcalculator.facs.org/RiskCalculator/</div>
+  <a class="btn btn-navy nsqip-link" href="https://riskcalculator.facs.org/RiskCalculator/" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;margin-bottom:8px">Abrir calculadora oficial ACS NSQIP</a>
+  <div class="field" style="margin-bottom:8px">
+    <label>Procedimiento y código CPT usados en la calculadora</label>
+    <textarea id="nsqip-cpt" oninput="autoResize(this)" rows="1" placeholder="Ej. 27447 — artroplastia total de rodilla"></textarea>
+  </div>
+  <div class="field-grid fg-3">
+    <div class="field"><label>Complicación seria (%)</label><input id="nsqip-seria" type="number" step="0.1" min="0" max="100" placeholder="%" oninput="calcular()"></div>
+    <div class="field"><label>Cualquier complicación (%)</label><input id="nsqip-cualquier" type="number" step="0.1" min="0" max="100" placeholder="%" oninput="calcular()"></div>
+    <div class="field"><label>Muerte (%)</label><input id="nsqip-muerte" type="number" step="0.1" min="0" max="100" placeholder="%" oninput="calcular()"></div>
+    <div class="field"><label>Alta a enfermería o rehabilitación (%)</label><input id="nsqip-alta" type="number" step="0.1" min="0" max="100" placeholder="%" oninput="calcular()"></div>
+    <div class="field"><label>Días de estancia previstos</label><input id="nsqip-estancia" type="number" step="0.1" min="0" placeholder="días" oninput="calcular()"></div>
+  </div>
+</div>
+
+<!-- XII. CONCLUSIÓN -->
 <div class="section">
-  <div class="sec-header">XI. &nbsp; CONCLUSIÓN Y CLASIFICACIÓN DE RIESGO</div>
+  <div class="sec-header">XII. &nbsp; CONCLUSIÓN Y CLASIFICACIÓN DE RIESGO</div>
   <div class="conclusion-grid" id="concl-grid"></div>
   <div class="global-box" id="global-box" style="border-color:var(--line);background:var(--light)">
     <div style="font-size:10px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Conclusión Global</div>
@@ -766,8 +816,8 @@ function agregarMed(){
   row.className='med-row';
   row.innerHTML='<div class="med-num">'+medCount+'</div>'+
     '<div class="med-fields">'+
-      '<input type="text" placeholder="Medicamento y presentación...">'+
-      '<input type="text" class="sub" placeholder="Dosis y frecuencia...">'+
+      '<textarea rows="1" placeholder="Medicamento y presentación..." oninput="autoResize(this)"></textarea>'+
+      '<textarea rows="1" class="sub" placeholder="Dosis y frecuencia..." oninput="autoResize(this)"></textarea>'+
     '</div>'+
     '<div class="med-plan"><select style="font-size:9.5px;border:none;border-bottom:1px solid var(--line);width:100%;font-family:Montserrat,sans-serif;background:transparent;outline:none;cursor:pointer">'+
       '<option>Continuar</option><option>Suspender día de Cx</option>'+
@@ -862,10 +912,11 @@ function calcular(){
     else{it.className='lab-interp alert';it.textContent='G5 — Falla renal';}
   }
 
-  // RCRI
+  // RCRI — el punto de cirugía solo si es intraperitoneal, intratorácica o vascular suprainguinal
   var rcri=0,rcriDet=[];
-  var proc=document.getElementById('procedimiento').value||document.getElementById('dx-cx').value;
-  if(proc){rcri+=1;rcriDet.push('Cirugía (+1)');}
+  var altoCx=document.getElementById('cx-altoriesgo');
+  if(altoCx&&altoCx.checked){rcri+=1;rcriDet.push('Cirugía de alto riesgo (+1)');}
+  else{rcriDet.push('Sin cirugía de alto riesgo (0)');}
   if(card){rcri+=1;rcriDet.push('Cardiopatía isquémica (+1)');}
   if(ic){rcri+=1;rcriDet.push('Insuficiencia cardíaca (+1)');}
   if(avc){rcri+=1;rcriDet.push('AVC/EVC previo (+1)');}
@@ -1022,7 +1073,39 @@ function calcular(){
 
   // ALERTAS AUTOMÁTICAS
   generarAlertas(cr,glu,hba1c,tsh,inr,tpt,plaq,pas,pad,sato2,card,rcri,cap,hto,htoMin,tfg);
+  pintarDasi();
   generarConclusion(asaNum,rcri,cap,pas,glu,hba1c,tsh,cr,tfg,hb,hto,htoMin);
+}
+
+function leerDasi(){
+  var score=0,n=0;
+  document.querySelectorAll('.dasi-item').forEach(function(el){
+    if(el.checked){score+=(parseFloat(el.getAttribute('data-w'))||0);n++;}
+  });
+  score=Math.round(score*100)/100;
+  var vo2=(0.43*score)+9.6;
+  var mets=vo2/3.5;
+  return {score:score,n:n,vo2:vo2,mets:mets};
+}
+function pintarDasi(){
+  var d=leerDasi();
+  var num=document.getElementById('sc-dasi');
+  var b=document.getElementById('b-dasi');
+  var det=document.getElementById('d-dasi');
+  if(!num||!b||!det)return d;
+  var formula='VO₂ pico = (0.43 × DASI) + 9.6. METs = VO₂ pico / 3.5. Según ACC/AHA 2024, un DASI mayor de 34 equivale a unos 4 METs o más.';
+  if(d.n===0){
+    num.textContent='—';
+    b.className='badge badge-gray';
+    b.textContent='Pendiente';
+    det.textContent=formula;
+    return d;
+  }
+  num.textContent=d.score.toFixed(2);
+  if(d.score>34){b.className='badge badge-green';b.textContent='DASI >34 ≈ ≥4 METs';}
+  else{b.className='badge badge-amber';b.textContent='DASI ≤34 ≈ menos de 4 METs';}
+  det.textContent='VO₂ pico estimado '+d.vo2.toFixed(1)+' ml/kg/min · '+d.mets.toFixed(1)+' METs. '+formula;
+  return d;
 }
 
 function interpLab(id,val,rango){
@@ -1070,9 +1153,12 @@ function generarConclusion(asa,rcri,cap,pas,glu,hba1c,tsh,cr,tfg,hb,hto,htoMin){
     {lbl:'Función Tiroidea',val:tsh?(tsh>10?'Hipotiroidismo severo — diferir':tsh>4?'Subclínico':'Normal'):'Pendiente',cls:tsh>10?'ci-red':tsh>4?'ci-amber':tsh?'ci-green':'ci-gray'},
     {lbl:'Función Renal',val:tfg?(tfg>=60?'Conservada':'ERC G'+(tfg>=45?'3a':tfg>=30?'3b':tfg>=15?'4':'5')):'Pendiente',cls:tfg>=60?'ci-green':tfg>=30?'ci-amber':tfg?'ci-red':'ci-gray'},
     {lbl:'Reserva Hematológica',val:hb?(hb>=12?'Adecuada (Hb '+hb+')':'Anemia — valorar'):'Pendiente',cls:hb>=12?'ci-green':hb>=10?'ci-amber':hb?'ci-red':'ci-gray'},
+    textoCapacidad(),
+    textoNsqip(),
   ];
   document.getElementById('concl-grid').innerHTML=items.map(function(it){
-    return '<div class="concl-item '+it.cls+'"><div class="concl-lbl">'+it.lbl+'</div><div class="concl-val">'+it.val+'</div></div>';
+    var wide=it.wide?' style="grid-column:1/-1"':'';
+    return '<div class="concl-item '+it.cls+'"'+wide+'><div class="concl-lbl">'+it.lbl+'</div><div class="concl-val">'+it.val+'</div></div>';
   }).join('');
   var crit=[tsh>10,glu>=300,cr>=2,pas>180,inr>1.5,rcri>=3].filter(Boolean).length;
   var mod=[glu>=200,hba1c>=8,pas>140,tsh>4,(tfg&&tfg<45)].filter(Boolean).length;
@@ -1080,6 +1166,38 @@ function generarConclusion(asa,rcri,cap,pas,glu,hba1c,tsh,cr,tfg,hb,hto,htoMin){
   if(crit>0){gb.style.borderColor='var(--red)';gb.style.background='var(--red-l)';}
   else if(mod>0){gb.style.borderColor='var(--amber)';gb.style.background='var(--amber-l)';}
   else{gb.style.borderColor='var(--green)';gb.style.background='var(--green-l)';}
+}
+function textoCapacidad(){
+  var d=leerDasi();
+  var sel=document.getElementById('mets-escaleras');
+  var m=sel?sel.value:'';
+  var escalera=m===''?'Subir 2 pisos: sin registrar':(m==='1'?'Sube 2 pisos: sí (≥4 METs)':'Sube 2 pisos: no (<4 METs)');
+  if(d.n===0&&m==='')return {lbl:'Capacidad funcional',val:'Pendiente',cls:'ci-gray',wide:true};
+  var dasiTxt=d.n===0?'DASI sin respuestas':('DASI '+d.score.toFixed(2)+' · VO₂ '+d.vo2.toFixed(1)+' · '+d.mets.toFixed(1)+' METs');
+  var interp='';
+  var cls='ci-gray';
+  if(d.n>0){
+    if(d.score>34){interp=' · DASI >34 ≈ ≥4 METs';cls='ci-green';}
+    else{interp=' · DASI ≤34 ≈ menos de 4 METs';cls='ci-amber';}
+  }else if(m==='1')cls='ci-green';
+  else if(m==='0')cls='ci-amber';
+  return {lbl:'Capacidad funcional',val:escalera+' · '+dasiTxt+interp,cls:cls,wide:true};
+}
+function textoNsqip(){
+  var cpt=(document.getElementById('nsqip-cpt').value||'').replace(/\s+/g,' ').trim();
+  function n(id){var el=document.getElementById(id);return el&&el.value!==''?el.value:null;}
+  var seria=n('nsqip-seria'),cual=n('nsqip-cualquier'),muerte=n('nsqip-muerte'),alta=n('nsqip-alta'),est=n('nsqip-estancia');
+  if(!cpt&&seria===null&&cual===null&&muerte===null&&alta===null&&est===null){
+    return {lbl:'ACS NSQIP (oficial)',val:'Pendiente — copiar de la calculadora oficial del ACS',cls:'ci-gray',wide:true};
+  }
+  var partes=[];
+  if(seria!==null)partes.push('Complicación seria '+seria+'%');
+  if(cual!==null)partes.push('Cualquier complicación '+cual+'%');
+  if(muerte!==null)partes.push('Muerte '+muerte+'%');
+  if(alta!==null)partes.push('Alta a enfermería o rehabilitación '+alta+'%');
+  if(est!==null)partes.push('Estancia '+est+' días');
+  if(cpt)partes.push('CPT/procedimiento: '+cpt);
+  return {lbl:'ACS NSQIP (oficial)',val:partes.join(' · '),cls:'ci-gray',wide:true};
 }
 
 // SCORES ADICIONALES
@@ -1177,17 +1295,7 @@ function guardarPDF(){
   document.querySelector('.controls').style.display='none';
   document.getElementById('addMedBtn').style.display='none';
 
-  // EXPANDIR todos los textareas antes de capturar
   autoResizeAll();
-  var tas=document.querySelectorAll('textarea');
-  tas.forEach(function(el){
-    el.style.height='auto';
-    el.style.height=(el.scrollHeight+4)+'px';
-    el.style.overflow='visible';
-    el.style.whiteSpace='pre-wrap';
-    el.style.wordWrap='break-word';
-    el.style.resize='none';
-  });
 
   html2pdf().set({
     margin:[6,5,6,5],
@@ -1203,16 +1311,14 @@ function guardarPDF(){
       windowWidth:document.getElementById('hoja').scrollWidth
     },
     jsPDF:{unit:'mm',format:'letter',orientation:'portrait'},
-    pagebreak:{mode:['avoid-all','css','legacy']}
-  }).from(document.getElementById('hoja')).save().then(function(){
-    document.querySelector('.controls').style.display='';
-    document.getElementById('addMedBtn').style.display='';
-    tas.forEach(function(el){
-      el.style.height='';
-      el.style.overflow='auto';
-      el.style.resize='vertical';
-    });
-  });
+    pagebreak:{mode:['css','legacy']}
+  }).from(document.getElementById('hoja')).save().then(restaurarTrasPdf, restaurarTrasPdf);
+}
+function restaurarTrasPdf(){
+  document.querySelector('.controls').style.display='';
+  var add=document.getElementById('addMedBtn');
+  if(add) add.style.display='';
+  autoResizeAll();
 }
 
 // INIT
@@ -1226,17 +1332,27 @@ document.addEventListener('DOMContentLoaded',function(){
 
 // ── AUTORESIZE ────────────────────────────────────────────
 function autoResize(el){
-  el.style.height='auto';
-  el.style.height=(el.scrollHeight)+'px';
+  if(!el||el.tagName!=='TEXTAREA')return;
   el.style.overflow='hidden';
+  el.style.height='0px';
+  var cs=window.getComputedStyle(el);
+  var extra=0;
+  if(cs.boxSizing==='border-box'){
+    extra=(parseFloat(cs.borderTopWidth)||0)+(parseFloat(cs.borderBottomWidth)||0);
+  }
+  var h=el.scrollHeight+extra;
+  var min=parseFloat(cs.minHeight)||0;
+  if(h<min)h=min;
+  el.style.height=h+'px';
 }
 function autoResizeAll(){
-  document.querySelectorAll('textarea').forEach(function(el){
-    el.style.height='auto';
-    el.style.height=(el.scrollHeight)+'px';
-    el.style.overflow='hidden';
-  });
+  document.querySelectorAll('textarea').forEach(autoResize);
 }
+window.addEventListener('beforeprint',autoResizeAll);
+window.addEventListener('afterprint',autoResizeAll);
+document.addEventListener('input',function(e){
+  if(e.target&&e.target.tagName==='TEXTAREA')autoResize(e.target);
+});
 
 </script>
 </body>
