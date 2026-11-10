@@ -83,8 +83,8 @@ body{font-family:'Montserrat',sans-serif;background:#c8d2e2;min-height:100vh;pad
   resize:none;min-height:44px;border:1px solid var(--line);
   border-radius:4px;padding:6px;background:var(--light);
   font-family:'Montserrat',sans-serif;font-size:11px;
-  word-wrap:break-word;overflow-wrap:break-word;white-space:pre-wrap;
-  overflow:hidden;width:100%;outline:none;line-height:1.5}
+  word-wrap:break-word;overflow-wrap:anywhere;white-space:pre-wrap;
+  overflow:hidden;width:100%;outline:none;line-height:1.5;field-sizing:content}
 .field textarea:focus{border-color:var(--sky2);background:#fff}
 .field select{background:transparent;cursor:pointer}
 
@@ -149,12 +149,14 @@ body{font-family:'Montserrat',sans-serif;background:#c8d2e2;min-height:100vh;pad
   padding:6px 0;border-bottom:1px solid var(--line);align-items:start}
 .med-num{font-size:11px;font-weight:800;color:var(--gold2);text-align:center;padding-top:2px}
 .med-fields{display:flex;flex-direction:column;gap:3px}
-.med-fields input{border:none;border-bottom:1px solid var(--line);width:100%;
+.med-fields input,.med-fields textarea{border:none;border-bottom:1px solid var(--line);width:100%;
   font-family:'Montserrat',sans-serif;font-size:11.5px;font-weight:600;
   color:var(--ink);background:transparent;outline:none;padding:1px 2px;
-  word-wrap:break-word;overflow-wrap:break-word}
-.med-fields input.sub{font-size:10px;font-weight:400;color:var(--gray)}
-.med-fields input:focus{border-bottom-color:var(--sky)}
+  word-wrap:break-word;overflow-wrap:anywhere}
+.med-fields textarea{display:block;resize:none;overflow:hidden;white-space:pre-wrap;
+  line-height:1.35;min-height:18px;field-sizing:content}
+.med-fields input.sub,.med-fields textarea.sub{font-size:10px;font-weight:400;color:var(--gray)}
+.med-fields input:focus,.med-fields textarea:focus{border-bottom-color:var(--sky)}
 .med-plan select{border:none;border-bottom:1px solid var(--line);font-size:10px;
   font-family:'Montserrat',sans-serif;color:var(--ink);background:transparent;
   outline:none;width:100%;cursor:pointer}
@@ -209,39 +211,30 @@ body{font-family:'Montserrat',sans-serif;background:#c8d2e2;min-height:100vh;pad
   body{background:#fff;padding:0;margin:0}
   .controls{display:none !important}
   .add-btn{display:none !important}
-  .sheet{box-shadow:none;max-width:100%;width:100%}
+  .sheet{box-shadow:none;max-width:100%;width:100%;overflow:visible;height:auto}
+  .footer,.bottom-bar{position:static}
 
-  /* Campos — mostrar contenido completo sin recortar */
-  input,select{
-    overflow:visible !important;
-    white-space:normal !important;
-    word-wrap:break-word !important;
-    overflow-wrap:break-word !important;
-    height:auto !important;
-    max-height:none !important;
-  }
+  /* La altura la fija el texto (field-sizing y el ajuste al escribir).
+     height:auto sin eso encoge el cuadro a un renglón y el resto no empuja hacia abajo. */
   textarea{
-    overflow:visible !important;
+    overflow:hidden !important;
     white-space:pre-wrap !important;
-    word-wrap:break-word !important;
-    overflow-wrap:break-word !important;
-    height:auto !important;
+    overflow-wrap:anywhere !important;
     max-height:none !important;
-    min-height:0 !important;
     resize:none !important;
-    display:block !important;
-    border-radius:0 !important;
+    field-sizing:content !important;
   }
 
-  /* Evitar corte entre páginas */
-  .section{page-break-inside:avoid}
-  .score-card{page-break-inside:avoid}
-  .med-row{page-break-inside:avoid}
-  .lab-table tr{page-break-inside:avoid}
-  .concl-item{page-break-inside:avoid}
-  .check-grid{page-break-inside:avoid}
-  .escala-row{page-break-inside:avoid}
-  .sap-item{page-break-inside:avoid}
+  /* Las secciones largas siguen en la página siguiente, sin encoger la letra */
+  .section{break-inside:auto;page-break-inside:auto}
+  .score-card{break-inside:avoid;page-break-inside:avoid}
+  .med-row{break-inside:avoid;page-break-inside:avoid}
+  .lab-table tr{break-inside:avoid;page-break-inside:avoid}
+  .concl-item{break-inside:avoid;page-break-inside:avoid}
+  .check-grid{break-inside:avoid;page-break-inside:avoid}
+  .escala-row{break-inside:avoid;page-break-inside:avoid}
+  .sap-item{break-inside:avoid;page-break-inside:avoid}
+  .footer,.firma-row,.membrete{break-inside:avoid;page-break-inside:avoid}
 
   /* Colores exactos */
   .top-bar,.footer,.bottom-bar,.sec-header,.sub-header,
@@ -766,8 +759,8 @@ function agregarMed(){
   row.className='med-row';
   row.innerHTML='<div class="med-num">'+medCount+'</div>'+
     '<div class="med-fields">'+
-      '<input type="text" placeholder="Medicamento y presentación...">'+
-      '<input type="text" class="sub" placeholder="Dosis y frecuencia...">'+
+      '<textarea rows="1" placeholder="Medicamento y presentación..." oninput="autoResize(this)"></textarea>'+
+      '<textarea rows="1" class="sub" placeholder="Dosis y frecuencia..." oninput="autoResize(this)"></textarea>'+
     '</div>'+
     '<div class="med-plan"><select style="font-size:9.5px;border:none;border-bottom:1px solid var(--line);width:100%;font-family:Montserrat,sans-serif;background:transparent;outline:none;cursor:pointer">'+
       '<option>Continuar</option><option>Suspender día de Cx</option>'+
@@ -1177,17 +1170,7 @@ function guardarPDF(){
   document.querySelector('.controls').style.display='none';
   document.getElementById('addMedBtn').style.display='none';
 
-  // EXPANDIR todos los textareas antes de capturar
   autoResizeAll();
-  var tas=document.querySelectorAll('textarea');
-  tas.forEach(function(el){
-    el.style.height='auto';
-    el.style.height=(el.scrollHeight+4)+'px';
-    el.style.overflow='visible';
-    el.style.whiteSpace='pre-wrap';
-    el.style.wordWrap='break-word';
-    el.style.resize='none';
-  });
 
   html2pdf().set({
     margin:[6,5,6,5],
@@ -1203,16 +1186,14 @@ function guardarPDF(){
       windowWidth:document.getElementById('hoja').scrollWidth
     },
     jsPDF:{unit:'mm',format:'letter',orientation:'portrait'},
-    pagebreak:{mode:['avoid-all','css','legacy']}
-  }).from(document.getElementById('hoja')).save().then(function(){
-    document.querySelector('.controls').style.display='';
-    document.getElementById('addMedBtn').style.display='';
-    tas.forEach(function(el){
-      el.style.height='';
-      el.style.overflow='auto';
-      el.style.resize='vertical';
-    });
-  });
+    pagebreak:{mode:['css','legacy']}
+  }).from(document.getElementById('hoja')).save().then(restaurarTrasPdf, restaurarTrasPdf);
+}
+function restaurarTrasPdf(){
+  document.querySelector('.controls').style.display='';
+  var add=document.getElementById('addMedBtn');
+  if(add) add.style.display='';
+  autoResizeAll();
 }
 
 // INIT
@@ -1226,17 +1207,27 @@ document.addEventListener('DOMContentLoaded',function(){
 
 // ── AUTORESIZE ────────────────────────────────────────────
 function autoResize(el){
-  el.style.height='auto';
-  el.style.height=(el.scrollHeight)+'px';
+  if(!el||el.tagName!=='TEXTAREA')return;
   el.style.overflow='hidden';
+  el.style.height='0px';
+  var cs=window.getComputedStyle(el);
+  var extra=0;
+  if(cs.boxSizing==='border-box'){
+    extra=(parseFloat(cs.borderTopWidth)||0)+(parseFloat(cs.borderBottomWidth)||0);
+  }
+  var h=el.scrollHeight+extra;
+  var min=parseFloat(cs.minHeight)||0;
+  if(h<min)h=min;
+  el.style.height=h+'px';
 }
 function autoResizeAll(){
-  document.querySelectorAll('textarea').forEach(function(el){
-    el.style.height='auto';
-    el.style.height=(el.scrollHeight)+'px';
-    el.style.overflow='hidden';
-  });
+  document.querySelectorAll('textarea').forEach(autoResize);
 }
+window.addEventListener('beforeprint',autoResizeAll);
+window.addEventListener('afterprint',autoResizeAll);
+document.addEventListener('input',function(e){
+  if(e.target&&e.target.tagName==='TEXTAREA')autoResize(e.target);
+});
 
 </script>
 </body>
